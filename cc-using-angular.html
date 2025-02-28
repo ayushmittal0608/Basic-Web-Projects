@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="currencyConverterApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        select, input[type="number"] {
+            padding: 10px;
+            font-size: 1em;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" ng-controller="CurrencyConverterController">
+        <h1>Currency Converter</h1>
+        <input type="number" ng-model="amount" placeholder="Amount" ng-change="convertCurrency()" />
+        <select ng-model="fromCurrency" ng-change="convertCurrency()">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="JPY">JPY</option>
+            <!-- Add more currencies here -->
+        </select>
+        <select ng-model="toCurrency" ng-change="convertCurrency()">
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <!-- Add more currencies here -->
+        </select>
+        <div class="result" ng-if="convertedAmount">
+            <p>{{amount}} {{fromCurrency}} = {{convertedAmount}} {{toCurrency}}</p>
+        </div>
+    </div>
+
+    <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+    <script>
+        angular.module('currencyConverterApp', [])
+            .controller('CurrencyConverterController', function($scope, $http) {
+                $scope.amount = 0;
+                $scope.fromCurrency = 'USD';
+                $scope.toCurrency = 'INR';
+                $scope.convertedAmount = null;
+
+                // Function to perform currency conversion
+                $scope.convertCurrency = function() {
+                    if ($scope.amount <= 0) {
+                        $scope.convertedAmount = null;
+                        return;
+                    }
+
+                    const apiKey = 'a8bf8b246ae7fd5b61f3f81d'; // Replace with your actual API key
+                    const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${$scope.fromCurrency}`;
+
+                    $http.get(url).then(function(response) {
+                        if (response.data.result === "error") {
+                            alert("Error fetching exchange rates.");
+                            return;
+                        }
+
+                        const rate = response.data.conversion_rates[$scope.toCurrency];
+                        if (!rate) {
+                            alert("Conversion rate not available.");
+                            return;
+                        }
+
+                        $scope.convertedAmount = ($scope.amount * rate).toFixed(2);
+                    }, function(error) {
+                        alert("An error occurred while fetching the data.");
+                    });
+                };
+            });
+    </script>
+
+</body>
+</html>

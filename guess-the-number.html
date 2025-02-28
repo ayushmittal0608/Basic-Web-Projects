@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Guess the number game</title>
+    </head>
+    <body>
+        <h1>Guess the number</h1><br>
+        Guess a Number: <input type="number" id="number" placehoder="Enter a guess number">
+        <button onclick="checkGuess()">Submit</button>
+        <p id="result"></p>
+        <a href="/currency-convertor">Currency Convertor</a>
+        <script>
+            let guessNumber=Math.floor(Math.random()*100)+1;
+            let attempts=0;
+            function checkGuess(){
+                const currentGuess=parseInt(document.getElementById("number").value);
+                attempts++;
+                if(attempts===5){
+                    document.getElementById("result").textContent="You have lost the game";
+                    document.getElementById("number").disabled=true;
+                    document.getElementById("button").disabled=true;
+                }
+                if(currentGuess===guessNumber){
+                    document.getElementById("result").textContent="Congratulations! You have won the game.";
+                    document.getElementById("number").disabled=true;
+                }
+                else if(currentGuess<guessNumber){
+                    document.getElementById("result").textContent="Too Low! Try Again...";
+                }
+                else{
+                    document.getElementById("result").textContent="Too High! Try Again..."
+                }
+                documen.getElementById("number").value="";
+            }
+        </script>
+    </body>
+</html>

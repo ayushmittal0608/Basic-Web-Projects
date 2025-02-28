@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #clock {
+            font-size: 48px;
+            font-weight: bold;
+            padding: 20px;
+            border: 2px solid #000;
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Digital Clock</h1>
+    <div id="clock"></div>
+    <a href="/guess-the-number">Guess-the-number game</a>
+    <script>
+        // Function to update the clock every second
+        function updateClock(){
+            const now=new Date();
+            let hours=now.getHours();
+            let minutes=now.getMinutes();
+            let second=now.getSeconds();
+            hours=hours<10 ? '0'+hours: hours;
+            minutes=minutes<10 ? '0'+minutes: minutes;
+            second=second<10 ? '0'+second: second;
+            const timestring=hours+":"+minutes+":"+second;
+            document.getElementById("clock").textContent=timestring;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>    
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="chatApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <script src="https://code.angularjs.org/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .chat-box {
+            width: 400px;
+            height: 400px;
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .messages {
+            overflow-y: scroll;
+            flex-grow: 1;
+            margin-bottom: 10px;
+        }
+        .message {
+            padding: 5px;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .message.me {
+            background-color: #b3e0ff;
+            align-self: flex-end;
+        }
+        input, button {
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body ng-controller="ChatController">
+
+    <div class="chat-box">
+        <div class="messages">
+            <div class="message" ng-repeat="msg in messages" ng-class="{'me': msg.sender === 'me'}">
+                <strong>{{msg.sender}}:</strong> {{msg.text}}
+            </div>
+        </div>
+
+        <input type="text" ng-model="newMessage" placeholder="Type your message..." />
+        <button ng-click="sendMessage()">Send</button>
+    </div>
+    <script>
+        angular.module('chatApp', [])
+            .controller('ChatController', function($scope) {
+                // Connect to Socket.io server
+                const socket = io();
+
+                // Initialize messages array
+                $scope.messages = [];
+
+                // Function to send messages
+                $scope.sendMessage = function(event) {
+                    if ($scope.newMessage) {
+                        const message = {
+                            sender: 'me',
+                            text: $scope.newMessage
+                        };
+
+                        // Emit the message to the server
+                        socket.emit('chat message', $scope.newMessage);
+
+                        // Add message to the local message array
+                        $scope.messages.push(message);
+
+                        // Clear the input field
+                        $scope.newMessage = '';
+                    }
+                };
+
+                // Listen for incoming messages
+                socket.on('chat message', function(msg) {
+                    $scope.$apply(function() {
+                        // Add incoming message to the array
+                        if ($scope.messages[$scope.messages.length - 1]?.text !== msg) {
+                            $scope.messages.push({
+                                sender: 'them',
+                                text: msg
+                            });
+                        }
+                    });
+                });
+            });
+    </script>
+</body>
+</html>
